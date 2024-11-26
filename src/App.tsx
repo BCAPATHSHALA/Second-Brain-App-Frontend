@@ -1,8 +1,12 @@
 import { PlusIcon, ShareIcon } from "@heroicons/react/16/solid";
 import Button from "./components/ui/button";
 import Card from "./components/ui/card";
+import CreateContentModal from "./components/ui/createContentModal";
+import { useState } from "react";
 
 const App = () => {
+  const [open, setOpen] = useState(true);
+
   return (
     <div className="container w-full min-h-screen bg-seasalt p-4">
       {/* Buttons */}
@@ -18,6 +22,7 @@ const App = () => {
           startIcon={<PlusIcon className="w-4 h-4" />}
           variant="primary"
           size="md"
+          onClick={() => setOpen(true)}
         />
       </div>
 
@@ -44,6 +49,14 @@ const App = () => {
           link="https://www.youtube.com/watch/7ZdGP4pqWKI?si=wjI-ipu1Bk4QpK7F"
         />
       </div>
+
+      {/* Modal */}
+      <CreateContentModal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+      />
     </div>
   );
 };

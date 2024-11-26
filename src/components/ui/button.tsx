@@ -1,11 +1,12 @@
 import { ReactElement } from "react";
 
 interface ButtonInterface {
-  title: string;
+  title?: string;
   size: "lg" | "sm" | "md";
   startIcon?: ReactElement;
   endIcon?: ReactElement;
   variant: "primary" | "secondary";
+  onClick?: () => void;
 }
 
 const sizeStyles = {
@@ -25,13 +26,15 @@ const Button = ({
   startIcon,
   endIcon,
   variant,
+  onClick,
 }: ButtonInterface) => {
   return (
     <button
-      className={`flex justify-center items-center font-light rounded-md ${sizeStyles[size]} ${variantStyles[variant]}`}
+      onClick={onClick}
+      className={`flex justify-center items-center font-light rounded-md gap-2 ${sizeStyles[size]} ${variantStyles[variant]}`}
     >
       {startIcon}
-      <p className={`pl-2  pr-2`}>{title}</p>
+      {title && <span>{title}</span>}
       {endIcon}
     </button>
   );
