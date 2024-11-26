@@ -6,6 +6,7 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import axios from "axios";
 
 import { serverUrl } from "../../constants/constants";
+import { useNavigate } from "react-router-dom";
 
 const signInSchema = z.object({
   username: z
@@ -20,6 +21,8 @@ type SignInFormInputs = z.infer<typeof signInSchema>;
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -38,6 +41,7 @@ export default function SignInForm() {
         },
       });
       if (response.data.success) {
+        navigate("/dashboard");
         console.log("Signin successful:", response.data.message);
       } else {
         setError(response.data.message || "Signin failed");

@@ -5,7 +5,6 @@ import { z } from "zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import axios from "axios";
 import { serverUrl } from "../../constants/constants";
-
 const signUpSchema = z
   .object({
     username: z
