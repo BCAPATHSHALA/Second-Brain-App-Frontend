@@ -4,6 +4,7 @@ interface SidebarItemProps {
   title: string;
   icon: ReactElement;
 }
+
 const SidebarItem = ({ title, icon }: SidebarItemProps) => {
   return (
     <div className="flex items-center gap-2 cursor-pointer text-battleshipgray text-sm hover:text-primary transition-all duration-500 ease-in-out">

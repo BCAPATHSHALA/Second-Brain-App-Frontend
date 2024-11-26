@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { BoltIcon } from "@heroicons/react/16/solid";
 import SidebarItem from "./sidebarItem";
 import {
@@ -6,32 +9,81 @@ import {
   LinkIcon,
   TwitterIcon,
   YoutubeIcon,
+  Menu,
 } from "lucide-react";
 
 const Sidebar = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    // set isMobile to true if window width is 768px or less is mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Add event listener to check on window resize and call checkMobile
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    // Remove event listener on component unmount
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const toggleSidebar = () => setIsOpen(!isOpen);
+
+  const sidebarItems = [
+    { title: "Twitter", icon: <TwitterIcon className="w-6 h-6" /> },
+    { title: "Youtube", icon: <YoutubeIcon className="w-6 h-6" /> },
+    { title: "Document", icon: <FileText className="w-6 h-6" /> },
+    { title: "Link", icon: <LinkIcon className="w-6 h-6" /> },
+    { title: "Tag", icon: <HashIcon className="w-6 h-6" /> },
+  ];
+
   return (
-    <div className="w-64 h-screen bg-seasalt border-r fixed left-0 top-0">
-      {/* Sidebar Header */}
-      <div className="flex items-center justify-center h-16 bg-mediumslateblue">
-        <BoltIcon className="w-8 h-8 text-seasalt" />
-        <h1 className="text-xl font-semibold text-seasalt">Second Brain</h1>
+    <>
+      {/* Desktop Sidebar */}
+      <div
+        className={`w-64 h-screen bg-seasalt border-r fixed left-0 top-0 transition-transform duration-300 ease-in-out z-20 ${
+          isMobile ? "-translate-x-full" : ""
+        } ${isOpen ? "translate-x-0" : ""}`}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-center h-16 bg-mediumslateblue">
+          <BoltIcon className="w-8 h-8 text-seasalt" />
+          <h1 className="text-xl font-semibold text-seasalt">Second Brain</h1>
+        </div>
+
+        {/* Sidebar Items */}
+        <div className="flex flex-col gap-4 p-4 mt-4">
+          {sidebarItems.map((item, index) => (
+            <SidebarItem key={index} title={item.title} icon={item.icon} />
+          ))}
+        </div>
       </div>
 
-      {/* Sidebar Items */}
-      <div className="flex flex-col gap-4 p-4 mt-4">
-        <SidebarItem
-          title="Twitter"
-          icon={<TwitterIcon className="w-6 h-6" />}
-        />
-        <SidebarItem
-          title="Youtube"
-          icon={<YoutubeIcon className="w-6 h-6" />}
-        />
-        <SidebarItem title="Document" icon={<FileText className="w-6 h-6" />} />
-        <SidebarItem title="Link" icon={<LinkIcon className="w-6 h-6" />} />
-        <SidebarItem title="Tag" icon={<HashIcon className="w-6 h-6" />} />
-      </div>
-    </div>
+      {/* Mobile Menu */}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 bg-seasalt border-t z-10">
+          <div className="flex justify-around items-center h-16">
+            {sidebarItems.map((item, index) => (
+              <button
+                key={index}
+                className="p-2 text-battleshipgray hover:text-primary"
+              >
+                {item.icon}
+              </button>
+            ))}
+            <button
+              onClick={toggleSidebar}
+              className="p-2 text-battleshipgray hover:text-primary"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
