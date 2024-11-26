@@ -37,7 +37,12 @@ export default function SignUpForm() {
 
   const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     try {
-      const response = await axios.post(`${serverUrl}/user/signup`, data);
+      const response = await axios.post(`${serverUrl}/user/signup`, data, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.data.success) {
         console.log("Signup successful:", response.data.message);
       } else {

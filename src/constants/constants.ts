@@ -1,3 +1,3 @@
-const serverUrl = "http://localhost:3000/api/v1";
+const serverUrl = "http://localhost:8008/api/v1";
 
 export { serverUrl };

@@ -31,7 +31,12 @@ export default function SignInForm() {
 
   const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
     try {
-      const response = await axios.post(`${serverUrl}/user/signup`, data);
+      const response = await axios.post(`${serverUrl}/user/signin`, data, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.data.success) {
         console.log("Signin successful:", response.data.message);
       } else {
