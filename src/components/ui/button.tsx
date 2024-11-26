@@ -16,7 +16,7 @@ const sizeStyles = {
 
 const variantStyles = {
   primary: "bg-primary text-seasalt",
-  secondary: "bg-secondary text-mediumslateblue",
+  secondary: "bg-secondary text-mediumslateblue font-semibold",
 };
 
 const Button = ({
