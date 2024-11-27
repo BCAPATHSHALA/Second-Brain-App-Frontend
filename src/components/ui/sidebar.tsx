@@ -10,7 +10,12 @@ import {
   TwitterIcon,
   YoutubeIcon,
   Menu,
+  LogOut,
 } from "lucide-react";
+import Button from "./button";
+import axios from "axios";
+import { serverUrl } from "../../constants/constants";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -40,6 +45,25 @@ const Sidebar = () => {
     { title: "Tag", icon: <HashIcon className="w-6 h-6" /> },
   ];
 
+  // Logout Handler
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(`${serverUrl}/user/signout`, {
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        navigate("/");
+        console.log("Signout successful:", response.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error during signout:", error.response?.data?.message);
+      }
+    }
+  };
+
   return (
     <>
       {/* Desktop Sidebar */}
@@ -59,6 +83,18 @@ const Sidebar = () => {
           {sidebarItems.map((item, index) => (
             <SidebarItem key={index} title={item.title} icon={item.icon} />
           ))}
+        </div>
+
+        {/* Sidebar Logout */}
+        <div className="flex flex-col justify-center items-center gap-4 p-4 mt-4 fixed bottom-0 w-64">
+          <Button
+            startIcon={<LogOut className="w-4 h-4" />}
+            variant="secondary"
+            size="lg"
+            onClick={() => handleLogout()}
+          >
+            Sign Out
+          </Button>
         </div>
       </div>
 
