@@ -1,73 +1,119 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { XMarkIcon } from "@heroicons/react/16/solid"
-import axios from 'axios'
-import Button from "./button"
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { XMarkIcon } from "@heroicons/react/16/solid";
+import axios from "axios";
+import Button from "./button";
+import { serverUrl } from "../../constants/constants";
 
 // Define the content types based on your API
-const ContentTypes = ['YOUTUBE', 'TWITTER', 'DOCUMENT', 'LINK', 'TAG', 'CONTENT'] as const
+const ContentTypes = [
+  "YOUTUBE",
+  "TWITTER",
+  "DOCUMENT",
+  "LINK",
+  "TAG",
+  "CONTENT",
+] as const;
 
 const contentSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  type: z.enum(ContentTypes),
-  link: z.string().url('Invalid URL').optional().or(z.literal('')),
-  content: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-})
+  title: z
+    .string()
+    .min(10, { message: "Title must be at least 10 characters" })
+    .max(100, { message: "Title must be at most 100 characters" }),
+  type: z // How to make sure type is one of the ContentTypes. So we can use refine() to apply a custom error message.
+    .enum(ContentTypes)
+    .refine((val) => ContentTypes.includes(val), {
+      message: `Type must be one of ${ContentTypes.join(", ")}`,
+    }),
+  tags: z
+    .array(z.string())
+    .max(20, { message: "Tags must be at most 20 characters" })
+    .optional(),
+  link: z // How to make the link field optional but still validate as a URL if provided. So we can use z.preprocess() to handle empty strings as undefined before applying the .url() validation.
+    .preprocess(
+      (value) =>
+        typeof value === "string" && value.trim() === "" ? undefined : value,
+      z.string().url({ message: "Link must be a valid URL" }).optional()
+    ),
+  content: z
+    .string()
+    .max(1000, { message: "Content must be at most 1000 characters" })
+    .optional(),
+});
 
-type ContentFormInputs = z.infer<typeof contentSchema>
+type ContentFormInputs = z.infer<typeof contentSchema>;
 
 interface CreateContentModalProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const CreateContentModal = ({ open, onClose }: CreateContentModalProps) => {
-  const [error, setError] = useState<string | null>(null)
-  const [tags, setTags] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ContentFormInputs>({
-    resolver: zodResolver(contentSchema)
-  })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ContentFormInputs>({
+    resolver: zodResolver(contentSchema),
+  });
 
   const onSubmit: SubmitHandler<ContentFormInputs> = async (data) => {
     try {
-      const response = await axios.post('/api/v1/content/create', { ...data, tags })
+      const response = await axios.post(
+        `${serverUrl}/content/create`,
+        {
+          ...data,
+          tags,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (response.data.success) {
-        console.log('Content created successfully:', response.data.message)
-        reset()
-        setTags([])
-        onClose()
+        console.log("Content created successfully:", response.data.message);
+        reset();
+        setTags([]);
+        onClose();
       } else {
-        setError(response.data.message || 'Failed to create content')
+        setError(response.data.message || "Failed to create content");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        setError(error.response?.data?.message || 'An error occurred while creating content')
+        setError(
+          error.response?.data?.message ||
+            "An error occurred while creating content"
+        );
       } else {
-        setError('An unexpected error occurred')
+        setError("An unexpected error occurred");
       }
-      console.error('Error creating content:', error)
+      console.error("Error creating content:", error);
     }
-  }
+  };
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && e.currentTarget.value) {
-      e.preventDefault()
-      setTags([...tags, e.currentTarget.value])
-      e.currentTarget.value = ''
+    if (e.key === "Enter" && e.currentTarget.value) {
+      e.preventDefault();
+      setTags([...tags, e.currentTarget.value]);
+      e.currentTarget.value = "";
     }
-  }
+  };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove))
-  }
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
@@ -85,37 +131,51 @@ const CreateContentModal = ({ open, onClose }: CreateContentModalProps) => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <input
-                {...register('title')}
+                {...register("title")}
                 type="text"
                 placeholder="Title"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
-              {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>}
+              {errors.title && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.title.message}
+                </p>
+              )}
             </div>
             <div>
               <select
-                {...register('type')}
+                {...register("type")}
                 className="w-full p-2 border border-gray-300 rounded-md"
               >
                 <option value="">Select Type</option>
-                {ContentTypes.map(type => (
-                  <option key={type} value={type}>{type}</option>
+                {ContentTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
-              {errors.type && <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>}
+              {errors.type && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.type.message}
+                </p>
+              )}
             </div>
             <div>
               <input
-                {...register('link')}
+                {...register("link")}
                 type="text"
                 placeholder="Link (optional)"
                 className="w-full p-2 border border-gray-300 rounded-md"
               />
-              {errors.link && <p className="mt-1 text-sm text-red-600">{errors.link.message}</p>}
+              {errors.link && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.link.message}
+                </p>
+              )}
             </div>
             <div>
               <textarea
-                {...register('content')}
+                {...register("content")}
                 placeholder="Content (optional)"
                 className="w-full p-2 border border-gray-300 rounded-md"
                 rows={4}
@@ -129,8 +189,11 @@ const CreateContentModal = ({ open, onClose }: CreateContentModalProps) => {
                 onKeyPress={handleAddTag}
               />
               <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map(tag => (
-                  <span key={tag} className="bg-gray-200 px-2 py-1 rounded-full text-sm flex items-center">
+                {tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="bg-gray-200 px-2 py-1 rounded-full text-sm flex items-center"
+                  >
                     {tag}
                     <button
                       type="button"
@@ -156,24 +219,10 @@ const CreateContentModal = ({ open, onClose }: CreateContentModalProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateContentModal
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default CreateContentModal;
 
 // import { XMarkIcon } from "@heroicons/react/16/solid";
 // import Button from "./button";
