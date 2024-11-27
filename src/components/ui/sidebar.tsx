@@ -15,7 +15,7 @@ import {
 import Button from "./button";
 import axios from "axios";
 import { serverUrl } from "../../constants/constants";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -75,7 +75,9 @@ const Sidebar = () => {
         {/* Sidebar Header */}
         <div className="flex items-center justify-center h-16 bg-mediumslateblue">
           <BoltIcon className="w-8 h-8 text-seasalt" />
-          <h1 className="text-xl font-semibold text-seasalt">Second Brain</h1>
+          <Link to="/">
+            <h1 className="text-xl font-semibold text-seasalt">Second Brain</h1>
+          </Link>
         </div>
 
         {/* Sidebar Items */}
