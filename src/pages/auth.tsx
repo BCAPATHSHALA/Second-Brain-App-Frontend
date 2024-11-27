@@ -26,7 +26,7 @@ export default function AuthPage() {
 
       <div className="mt-8">
         <div className="bg-primary shadow rounded-lg md:p-10 sm:p-2 h-1/3">
-          {isSignIn ? <SignInForm /> : <SignUpForm />}
+          {isSignIn ? <SignInForm /> : <SignUpForm setIsSignIn={setIsSignIn}/>}
         </div>
       </div>
     </div>

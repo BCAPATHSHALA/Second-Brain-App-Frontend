@@ -21,7 +21,11 @@ const signUpSchema = z
 
 type SignUpFormInputs = z.infer<typeof signUpSchema>;
 
-export default function SignUpForm() {
+export default function SignUpForm({
+  setIsSignIn,
+}: {
+  setIsSignIn: (boolean: boolean) => void;
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +47,7 @@ export default function SignUpForm() {
         },
       });
       if (response.data.success) {
+        setIsSignIn(true);
         console.log("Signup successful:", response.data.message);
       } else {
         setError(response.data.message || "Signup failed");
