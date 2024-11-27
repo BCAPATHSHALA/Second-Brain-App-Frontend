@@ -15,18 +15,18 @@ const Dashboard = () => {
         {/* Buttons */}
         <div className="flex gap-4 justify-end mb-8">
           <Button
-            title="Share Brain"
             startIcon={<ShareIcon className="w-4 h-4" />}
             variant="secondary"
             size="md"
-          />
+          >
+            Share Brain
+          </Button>
           <Button
-            title="Add Content"
             startIcon={<PlusIcon className="w-4 h-4" />}
             variant="primary"
             size="md"
             onClick={() => setOpen(true)}
-          />
+          >Add Content</Button>
         </div>
 
         {/* Cards */}
