@@ -1,41 +1,45 @@
-import { ReactElement } from "react";
+import React from "react";
 
-interface ButtonInterface {
-  title?: string;
-  size: "lg" | "sm" | "md";
-  startIcon?: ReactElement;
-  endIcon?: ReactElement;
-  variant: "primary" | "secondary";
-  onClick?: () => void;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary";
+  size?: "sm" | "md" | "lg";
+  startIcon?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-const sizeStyles = {
-  lg: "px-8 py-4 text-xl",
-  md: "px-4 py-2 text-md",
-  sm: "px-2 py-1 text-sm",
-};
-
-const variantStyles = {
-  primary: "bg-primary text-seasalt",
-  secondary: "bg-secondary text-mediumslateblue font-semibold",
-};
-
-const Button = ({
-  title,
-  size,
+const Button: React.FC<ButtonProps> = ({
+  variant = "primary",
+  size = "md",
   startIcon,
-  endIcon,
-  variant,
-  onClick,
-}: ButtonInterface) => {
+  children,
+  className,
+  ...props
+}) => {
+  const baseStyles =
+    "inline-flex items-center justify-center rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-500 ease-in-out";
+  const variantStyles = {
+    primary:
+      "bg-primary text-seasalt hover:bg-mediumslateblue focus:ring-mediumslateblue",
+    secondary:
+      "bg-secondary text-mediumslateblue font-semibold hover:bg-battleshipgray hover:text-seasalt",
+  };
+  const sizeStyles = {
+    sm: "px-2 py-1 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
+  };
+
   return (
     <button
-      onClick={onClick}
-      className={`flex justify-center items-center font-light rounded-md gap-2 ${sizeStyles[size]} ${variantStyles[variant]}`}
+      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
+      {...props}
     >
-      {startIcon}
-      {title && <span>{title}</span>}
-      {endIcon}
+      {
+        <div className="flex justify-center items-center gap-2">
+          {startIcon}
+          {children}
+        </div>
+      }
     </button>
   );
 };
