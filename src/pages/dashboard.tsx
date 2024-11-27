@@ -6,6 +6,7 @@ import Card from "../components/ui/card";
 import CreateContentModal from "../components/ui/createContentModal";
 import Sidebar from "../components/ui/sidebar";
 import { serverUrl } from "../constants/constants";
+import ShareBrainModal from "../components/ui/shareBrainModel";
 
 interface Content {
   _id: string;
@@ -19,6 +20,7 @@ interface Content {
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
+  const [openShareModal, setOpenShareModal] = useState(false);
   const [contents, setContents] = useState<Content[]>([]);
 
   useEffect(() => {
@@ -65,6 +67,7 @@ const Dashboard = () => {
             startIcon={<ShareIcon className="w-4 h-4" />}
             variant="secondary"
             size="md"
+            onClick={() => setOpenShareModal(true)}
           >
             Share Brain
           </Button>
@@ -92,6 +95,10 @@ const Dashboard = () => {
             setOpen(false);
             fetchContents(); // Refresh contents after closing modal
           }}
+        />
+        <ShareBrainModal
+          open={openShareModal}
+          onClose={() => setOpenShareModal(false)}
         />
       </div>
     </div>
