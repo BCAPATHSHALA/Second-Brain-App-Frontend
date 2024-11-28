@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { BoltIcon } from "@heroicons/react/16/solid";
 import SidebarItem from "./sidebarItem";
